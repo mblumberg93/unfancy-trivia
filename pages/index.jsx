@@ -1,8 +1,43 @@
+import { useState } from "react"
+import { useDispatch } from 'react-redux'
+import { updateState } from '../actions'
+import { Card, CardTitle, CardBody, Form, FormInput, FormGroup, Button } from "shards-react"
 import styles from '../styles/Home.module.scss'
 import Layout from '../components/layout'
-import { Card, CardTitle, CardBody, Form, FormInput, FormGroup, Button } from "shards-react";
 
 export default function Home() {
+  const [gameId, setGameId] = useState('');
+  const [userName, setUserName] = useState('');
+  const [gameName, setGameName] = useState('');
+  const dispatch = useDispatch();
+
+  const updateGameState = updates => dispatch(updateState(updates))
+
+  const handleJoin = () => {
+    let gameState = {
+      isHost: false,
+      gameId: gameId,
+      userName: userName
+    }
+    updateGameState(gameState)
+    // TODO: Make call to Firebase
+  }
+
+  const handleCreate = () => {
+    let gameCode = generateGameCode();
+    let gameState = {
+      isHost: true,
+      gameName: gameName,
+      gameId: gameCode
+    }
+    updateGameState(gameState)
+    // TODO: Make call to Firebase
+  }
+
+  const generateGameCode = () => {
+    return Math.random().toString(36).substr(2, 5)
+  }
+
   return (
     <Layout>
       <div className={styles.welcomeHeader}>
@@ -14,14 +49,14 @@ export default function Home() {
           <CardTitle>Competitor</CardTitle>
           <Form>
             <FormGroup>
-              <label htmlFor="gameID">Game ID</label>
-              <FormInput id="gameID" />
+              <label htmlFor="gameId">Game ID</label>
+              <FormInput id="gameId" onChange={(e) => setGameId(e.target.value)} />
             </FormGroup>
             <FormGroup>
-              <label htmlFor="username">User Name</label>
-              <FormInput id="username" />
+              <label htmlFor="userName">User Name</label>
+              <FormInput id="userName" onChange={(e) => setUserName(e.target.value)} />
             </FormGroup>
-            <Button theme="info">Join!</Button>
+            <Button theme="info" onClick={handleJoin}>Join!</Button>
           </Form>
         </CardBody>
       </Card>
@@ -31,9 +66,9 @@ export default function Home() {
           <Form>
             <FormGroup>
               <label htmlFor="gameName">Game Name</label>
-              <FormInput id="gameName" />
+              <FormInput id="gameName" onChange={(e) => setGameName(e.target.value)} />
             </FormGroup>
-            <Button theme="success">Create!</Button>
+            <Button theme="success" onClick={handleCreate}>Create!</Button>
           </Form>
         </CardBody>
       </Card>
