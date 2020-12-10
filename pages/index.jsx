@@ -4,6 +4,7 @@ import { updateState } from '../actions'
 import { Card, CardTitle, CardBody, Form, FormInput, FormGroup, Button } from "shards-react"
 import styles from '../styles/Home.module.scss'
 import Layout from '../components/layout'
+import { createGame, joinGame } from '../services/gameService'
 
 export default function Home() {
   const [gameId, setGameId] = useState('');
@@ -14,24 +15,26 @@ export default function Home() {
   const updateGameState = updates => dispatch(updateState(updates))
 
   const handleJoin = () => {
-    let gameState = {
+    let appState = {
       isHost: false,
       gameId: gameId,
       userName: userName
     }
-    updateGameState(gameState)
-    // TODO: Make call to Firebase
+    updateGameState(appState)
+    // TODO: Update state and go to first question
+    joinGame(gameId, userName, (gameState) => { console.log(gameState) })
   }
 
   const handleCreate = () => {
     let gameCode = generateGameCode();
-    let gameState = {
+    let appState = {
       isHost: true,
       gameName: gameName,
       gameId: gameCode
     }
-    updateGameState(gameState)
-    // TODO: Make call to Firebase
+    updateGameState(appState)
+    // TODO: Update state and go to first question
+    createGame(gameCode, gameName, () => { console.log(gameCode) })
   }
 
   const generateGameCode = () => {
