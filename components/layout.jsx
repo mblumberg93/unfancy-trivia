@@ -9,7 +9,7 @@ export default function Layout({ children }) {
         <title>Unfancy Trivia</title>
         <link rel="icon" href="/favicon.ico" />
         <meta name="description" 
-              content="LillyBelle Deer's Professional Website" />
+              content="Unfancy Trivia" />
       </Head>
       <Container>
         <Navbar>

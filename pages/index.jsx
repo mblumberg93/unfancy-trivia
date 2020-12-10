@@ -5,24 +5,29 @@ import { Card, CardTitle, CardBody, Form, FormInput, FormGroup, Button } from "s
 import styles from '../styles/Home.module.scss'
 import Layout from '../components/layout'
 import { createGame, joinGame } from '../services/gameService'
+import { useRouter } from 'next/router'
 
 export default function Home() {
-  const [gameId, setGameId] = useState('');
-  const [userName, setUserName] = useState('');
-  const [gameName, setGameName] = useState('');
-  const dispatch = useDispatch();
-
+  const [gameId, setGameId] = useState('')
+  const [teamName, setTeamName] = useState('')
+  const [gameName, setGameName] = useState('')
+  const dispatch = useDispatch()
+  const router = useRouter()
   const updateGameState = updates => dispatch(updateState(updates))
 
   const handleJoin = () => {
     let appState = {
       isHost: false,
       gameId: gameId,
-      userName: userName
+      teamName: teamName
     }
     updateGameState(appState)
-    // TODO: Update state and go to first question
-    joinGame(gameId, userName, (gameState) => { console.log(gameState) })
+
+    joinGame(gameId, teamName, navigateToCompetitor)
+  }
+
+  const navigateToCompetitor = (gameState) =>{
+    // TODO: Update state with gameName and currentQuestion and navigate to competitor screen
   }
 
   const handleCreate = () => {
@@ -30,11 +35,15 @@ export default function Home() {
     let appState = {
       isHost: true,
       gameName: gameName,
-      gameId: gameCode
+      gameId: gameCode,
+      currentQuestion: 1
     }
     updateGameState(appState)
-    // TODO: Update state and go to first question
-    createGame(gameCode, gameName, () => { console.log(gameCode) })
+    createGame(gameCode, gameName, navigateToHost)
+  }
+
+  const navigateToHost = () => {
+    router.push('/host')
   }
 
   const generateGameCode = () => {
@@ -56,8 +65,8 @@ export default function Home() {
               <FormInput id="gameId" onChange={(e) => setGameId(e.target.value)} />
             </FormGroup>
             <FormGroup>
-              <label htmlFor="userName">User Name</label>
-              <FormInput id="userName" onChange={(e) => setUserName(e.target.value)} />
+              <label htmlFor="teamName">Team Name</label>
+              <FormInput id="teamName" onChange={(e) => setTeamName(e.target.value)} />
             </FormGroup>
             <Button theme="info" onClick={handleJoin}>Join!</Button>
           </Form>

@@ -1,0 +1,22 @@
+.teamScoreForm {
+    margin: 0.8rem 0;
+    border: 1px solid lightslategrey;
+    border-radius: 0.4rem;
+}
+.teamScoreRow {
+    @media (min-width: 992px) { 
+        height: 3rem;
+        line-height: 3rem;
+    }
+}
+.scoreCol {
+    @media (max-width: 992px) { 
+        margin: 0.5rem 0;
+    }
+}
+.scoreInput {
+    margin: auto;
+    @media (max-width: 992px) { 
+        margin: 0.5rem 0;
+    }
+}
