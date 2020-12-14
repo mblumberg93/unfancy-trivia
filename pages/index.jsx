@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { useDispatch } from 'react-redux'
 import { updateState } from '../actions'
-import { Card, CardTitle, CardBody, Form, FormInput, FormGroup, Button } from "shards-react"
+import { Card, CardTitle, CardBody, Form, FormInput, FormGroup, Button } from 'shards-react'
 import styles from '../styles/Home.module.scss'
 import Layout from '../components/layout'
 import { createGame, joinGame } from '../services/gameService'
@@ -26,8 +26,13 @@ export default function Home() {
     joinGame(gameId, teamName, navigateToCompetitor)
   }
 
-  const navigateToCompetitor = (gameState) =>{
-    // TODO: Update state with gameName and currentQuestion and navigate to competitor screen
+  const navigateToCompetitor = (gameState) => {
+    let appState = {
+      currentQuestion: gameState.currentQuestion,
+      gameName: gameState.gameName
+    }
+    updateGameState(appState)
+    router.push('/competitor')
   }
 
   const handleCreate = () => {

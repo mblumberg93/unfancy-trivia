@@ -16,7 +16,7 @@ export default function TeamScore(props) {
           {props.team}
         </Col>
         <Col className={styles.scoreCol} sm="12" lg="6">
-          Answer: { props.answer ? props.answer : 'TBD' }
+          Answer: { props.answer }
         </Col>
         <Col className={styles.scoreInput} sm="12" lg="3">
           <FormInput placeholder="Score" value={props.score} onChange={(e) => handleScoreUpdate(e.target.value)} />

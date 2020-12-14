@@ -34,3 +34,33 @@ export const getCurrentGameState = (gameCode, callback) => {
         callback(snapshot.val())
     })
 }
+
+export const addAnswer = (gameCode, answer, callback) => {
+    firebaseDB.ref('games/' + gameCode + '/answers').push({ 
+        question: answer.question, 
+        team: answer.team, 
+        answer: answer.answer,
+        score: answer.score
+    }, () => {
+        if (callback) callback()
+    })
+}
+
+export const updateAnswer = (gameCode, answer, callback) => {
+    firebaseDB.ref('games/' + gameCode + '/answers/' + answer.id).update({ 
+        question: answer.question, 
+        team: answer.team, 
+        answer: answer.answer,
+        score: answer.score
+    }, () => {
+        if (callback) callback(answer)
+    })
+}
+
+export const updateCurrentQuestion = (gameCode, currentQuestion, callback) => {
+    firebaseDB.ref('games/' + gameCode).update({ 
+        currentQuestion: currentQuestion
+    }, () => {
+        if (callback) callback()
+    })
+}
