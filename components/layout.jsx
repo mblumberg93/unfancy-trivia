@@ -1,8 +1,12 @@
 import Head from 'next/head'
-import { Container, Navbar, NavbarBrand } from "shards-react";
+import Link from 'next/link'
+import { Container, Navbar, NavbarBrand, Collapse, Nav, NavItem } from "shards-react";
 import styles from './layout.module.scss'
+import { useSelector } from 'react-redux'
 
 export default function Layout({ children }) {
+  const appState = useSelector(state => state)
+
   return (
     <>
       <Head>
@@ -16,6 +20,15 @@ export default function Layout({ children }) {
           <NavbarBrand className={styles.navBrand}>
             Unfancy Trivia
           </NavbarBrand>
+          { appState.gameId &&
+              <Nav navbar>
+                <NavItem>
+                  <Link href="/standings">
+                    <a className="nav-link">Standings</a>
+                  </Link>
+                </NavItem>
+              </Nav>
+          }
         </Navbar>
         <main className={styles.pageContent}>{children}</main>
       </Container>

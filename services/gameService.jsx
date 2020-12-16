@@ -64,3 +64,25 @@ export const updateCurrentQuestion = (gameCode, currentQuestion, callback) => {
         if (callback) callback()
     })
 }
+
+export const getStandings = (gameCode, callback) => {
+    firebaseDB.ref('games/' + gameCode).once('value', (snapshot) => {
+        let gameState = snapshot.val()
+        let teams = gameState.teams
+        let answers = gameState.answers
+        let standings = []
+        if (teams) {
+            Object.values(teams).map((team) => {
+                standings.push({ team: team, score: 0 })
+            })
+        }
+        if (answers) {
+            Object.values(answers).forEach((answer) => {
+                let index = standings.findIndex(standing => standing.team == answer.team)
+                standings[index].score += parseFloat(answer.score) 
+            })
+        }
+        standings = standings.sort((a, b) =>  parseFloat(b.score) - parseFloat(a.score))
+        callback(standings)
+    })
+}
