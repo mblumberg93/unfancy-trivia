@@ -5,9 +5,10 @@ import firebase from '../services/firebase'
 import { useRouter } from 'next/router'
 import { updateState } from '../actions'
 import { Button, Container, FormInput, Form, FormGroup } from 'shards-react'
-import { addAnswer } from '../services/gameService'
+import { addAnswer, getCurrentGameState } from '../services/gameService'
+import { parseCookies } from 'nookies'
 
-export default function Competitor() {
+export default function Competitor({ cookies }) {
     const [answer, setAnswer] = useState('')
     const firebaseDB = firebase.database()
     const appState = useSelector(state => state)
@@ -16,11 +17,12 @@ export default function Competitor() {
     const updateGameState = updates => dispatch(updateState(updates))
 
     useEffect(() => {
-        if (!appState.gameId) {
+        if (!appState.gameId && !cookies.gameId) {
             router.push('/')
             return
         }
-        const gameRef = firebaseDB.ref('games/' + appState.gameId)
+        let gameId = appState.gameId ? appState.gameId : cookies.gameId
+        const gameRef = firebaseDB.ref('games/' + gameId)
         const gameListener = gameRef.on('value', (snapshot) => {
             let currentQuestion = snapshot.val().currentQuestion
             if (currentQuestion == appState.currentQuestion) {
@@ -32,10 +34,28 @@ export default function Competitor() {
             updateGameState(gameState)
             setAnswer('')
         })
+        if (!appState.gameId) {
+            refreshCurrentGameState(cookies.gameId, cookies.teamName)
+        }
         return () => {
             gameRef.off('value', gameListener)
         }
     })
+
+    // TODO - move into a service
+    const refreshCurrentGameState = (gameCode, teamName) => {
+        getCurrentGameState(gameCode, (gameState) => {
+            let newState = {
+                isHost: false,
+                gameName: gameState.gameName,
+                gameId: gameCode,
+                teamName: teamName,
+                currentQuestion: gameState.currentQuestion,
+                teams: gameState.teams
+            }
+            updateGameState(newState)
+        })
+    }
 
     const handleSubmit = () => {
         let newAnswer = {
@@ -65,3 +85,8 @@ export default function Competitor() {
         </Layout>
     )
 }
+
+export async function getServerSideProps(context) {
+    const cookies = parseCookies(context)
+    return { props: { cookies } }
+  }

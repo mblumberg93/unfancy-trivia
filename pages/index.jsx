@@ -6,6 +6,7 @@ import styles from '../styles/Home.module.scss'
 import Layout from '../components/layout'
 import { createGame, joinGame } from '../services/gameService'
 import { useRouter } from 'next/router'
+import { setCookie } from 'nookies'
 
 export default function Home() {
   const [gameId, setGameId] = useState('')
@@ -22,8 +23,15 @@ export default function Home() {
       teamName: teamName
     }
     updateGameState(appState)
-
+    setCompetitorCookies()
     joinGame(gameId, teamName, navigateToCompetitor)
+  }
+
+  // TODO - move into a service
+  const setCompetitorCookies = () => {
+    setCookie(null, 'isHost', false)
+    setCookie(null, 'gameId', gameId)
+    setCookie(null, 'teamName', teamName)
   }
 
   const navigateToCompetitor = (gameState) => {
@@ -44,7 +52,14 @@ export default function Home() {
       currentQuestion: 1
     }
     updateGameState(appState)
+    setHostCookies(gameCode)
     createGame(gameCode, gameName, navigateToHost)
+  }
+
+  // TODO - move into a service
+  const setHostCookies = (gameCode) => {
+    setCookie(null, 'isHost', true)
+    setCookie(null, 'gameId', gameCode)
   }
 
   const navigateToHost = () => {

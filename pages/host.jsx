@@ -6,9 +6,10 @@ import { useRouter } from 'next/router'
 import { updateState, addTeam, addAnswer, updateScore, resetAnswers } from '../actions'
 import TeamScore from '../components/teamScore'
 import { Button } from 'shards-react'
-import { updateAnswer, updateCurrentQuestion } from '../services/gameService'
+import { updateAnswer, updateCurrentQuestion, getCurrentGameState } from '../services/gameService'
+import { parseCookies } from 'nookies'
 
-export default function Host() {
+export default function Host({ cookies }) {
     const firebaseDB = firebase.database()
     const appState = useSelector(state => state)
     const router = useRouter()
@@ -20,25 +21,43 @@ export default function Host() {
     const resetGameAnswers = question => dispatch(resetAnswers(question))
 
     useEffect(() => {
-        if (!appState.gameId) {
+        if (!appState.gameId && !cookies.gameId) {
             router.push('/')
             return
         }
-        const teamsRef = firebaseDB.ref('games/' + appState.gameId + '/teams');
+        let gameId = appState.gameId ? appState.gameId : cookies.gameId
+        const teamsRef = firebaseDB.ref('games/' + gameId + '/teams');
         const teamsListener = teamsRef.on('child_added', (snapshot, _) => {
             addGameTeam(snapshot.val())
         })
-        const answersRef = firebaseDB.ref('games/' + appState.gameId + '/answers')
+        const answersRef = firebaseDB.ref('games/' + gameId + '/answers')
         const answersListener = answersRef.on('child_added', (snapshot, _) => {
             let answer = snapshot.val()
             answer.id = snapshot.key
             addGameAnswer(answer)
         })
+        if (!appState.gameId) {
+            refreshCurrentGameState(cookies.gameId)
+        }
         return () => {
             teamsRef.off('child_added', teamsListener)
             answersRef.off('child_added', answersListener)
         }
     })
+
+    // TODO - move into a service
+    const refreshCurrentGameState = (gameCode) => {
+        getCurrentGameState(gameCode, (gameState) => {
+            let newState = {
+                isHost: true,
+                gameName: gameState.gameName,
+                gameId: gameCode,
+                currentQuestion: gameState.currentQuestion,
+                teams: gameState.teams
+            }
+            updateGameState(newState)
+        })
+    }
 
     const handleScoreUpdate = (team, score) => {
         if (!isNumeric(score)) {
@@ -88,3 +107,8 @@ export default function Host() {
         </Layout>
     )
 }
+
+export async function getServerSideProps(context) {
+    const cookies = parseCookies(context)
+    return { props: { cookies } }
+  }
