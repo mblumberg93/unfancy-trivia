@@ -47,13 +47,19 @@ export default function Host({ cookies }) {
 
     // TODO - move into a service
     const refreshCurrentGameState = (gameCode) => {
+        let newTeams = []
+        if (gameState.teams) {
+            newTeams = Object.entries(gameState.teams).map((_, team) => {
+                return team
+            })
+        }
         getCurrentGameState(gameCode, (gameState) => {
             let newState = {
                 isHost: true,
                 gameName: gameState.gameName,
                 gameId: gameCode,
                 currentQuestion: gameState.currentQuestion,
-                teams: gameState.teams
+                teams: newTeams
             }
             updateGameState(newState)
         })

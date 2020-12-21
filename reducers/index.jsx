@@ -15,10 +15,13 @@ function rootReducer(state = initialState, action) {
 
   if (action.type == 'ADD_TEAM') {
     let newTeam = action.payload
-    if (state.teams.includes(newTeam)) {
+    let teams = state.teams
+    if (!Array.isArray(teams)) {
+      teams = []
+    }
+    if (teams.includes(newTeam)) {
       return state
     }
-    let teams = state.teams
     teams.push(newTeam)
     let currentAnswers = state.currentAnswers
     let newAnswer = { id: null, question: state.currentQuestion, team: newTeam, answer: 'TBD', score: '' }

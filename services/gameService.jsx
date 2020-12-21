@@ -35,6 +35,21 @@ export const getCurrentGameState = (gameCode, callback) => {
     })
 }
 
+//potentially use after refactoring
+export const currentGameStateToRedux = (gameCode, cookies, callback) => {
+    getCurrentGameState(gameCode, (gameState) => {
+        let reduxState = {
+            isHost: cookies.isHost === true || cookies.isHost === 'true',
+            gameName: gameState.gameName,
+            gameId: gameCode,
+            teamName: cookies.teamName,
+            currentQuestion: gameState.currentQuestion,
+            teams: gameState.teams
+        }
+        callback(reduxState)
+    })
+}
+
 export const addAnswer = (gameCode, answer, callback) => {
     firebaseDB.ref('games/' + gameCode + '/answers').push({ 
         question: answer.question, 
@@ -65,24 +80,25 @@ export const updateCurrentQuestion = (gameCode, currentQuestion, callback) => {
     })
 }
 
-export const getStandings = (gameCode, callback) => {
-    firebaseDB.ref('games/' + gameCode).once('value', (snapshot) => {
-        let gameState = snapshot.val()
-        let teams = gameState.teams
-        let answers = gameState.answers
-        let standings = []
-        if (teams) {
-            Object.values(teams).map((team) => {
-                standings.push({ team: team, score: 0 })
-            })
-        }
-        if (answers) {
-            Object.values(answers).forEach((answer) => {
-                let index = standings.findIndex(standing => standing.team == answer.team)
-                standings[index].score += parseFloat(answer.score) 
-            })
-        }
-        standings = standings.sort((a, b) =>  parseFloat(b.score) - parseFloat(a.score))
-        callback(standings)
-    })
+export const getStandings = async (gameCode) => {
+    let snapshot = await firebaseDB.ref('games/' + gameCode).once('value')
+    let gameState = snapshot.val()
+    if (!gameState) {
+        return []
+    }
+    let teams = gameState.teams
+    let answers = gameState.answers
+    let standings = []
+    if (teams) {
+        Object.values(teams).map((team) => {
+            standings.push({ team: team, score: 0 })
+        })
+    }
+    if (answers) {
+        Object.values(answers).forEach((answer) => {
+            let index = standings.findIndex(standing => standing.team == answer.team)
+            standings[index].score += parseFloat(answer.score) 
+        })
+    }
+    return standings.sort((a, b) =>  parseFloat(b.score) - parseFloat(a.score))
 }
