@@ -1,5 +1,4 @@
 import firebase from 'firebase/app'
-import 'firebase/analytics'
 import 'firebase/database'
 
 var firebaseConfig = {
@@ -15,9 +14,6 @@ var firebaseConfig = {
 
 if (typeof window !== undefined && !firebase.apps.length) {
     firebase.initializeApp(firebaseConfig)
-    if ('measurementId' in firebaseConfig) {
-        firebase.analytics()
-    }
 }
 
 export default firebase
