@@ -1,11 +1,14 @@
 import Head from 'next/head'
 import Link from 'next/link'
-import { Container, Navbar, NavbarBrand, Collapse, Nav, NavItem } from "shards-react";
+import { Container, Navbar, NavbarBrand, Nav, NavItem } from 'shards-react';
 import styles from './layout.module.scss'
-import { useSelector } from 'react-redux'
+import { destroyGameCookies } from '../services/cookiesService'
 
-export default function Layout({ children }) {
-  const appState = useSelector(state => state)
+export default function Layout({ children, inGame }) {
+
+  const quit = () => {
+    destroyGameCookies()
+  }
 
   return (
     <>
@@ -20,14 +23,19 @@ export default function Layout({ children }) {
           <NavbarBrand className={styles.navBrand}>
             Unfancy Trivia
           </NavbarBrand>
-          { appState.gameId &&
-              <Nav navbar>
-                <NavItem>
-                  <Link href="/standings">
-                    <a className="nav-link">Standings</a>
-                  </Link>
-                </NavItem>
-              </Nav>
+          { inGame &&
+            <Nav>
+              <NavItem>
+                <Link href="/standings">
+                  <a className="nav-link">Standings</a>
+                </Link>
+              </NavItem>
+              <NavItem>
+                <Link href="/">
+                  <a className="nav-link" onClick={quit}>Quit Game</a>
+                </Link>
+              </NavItem>
+            </Nav>
           }
         </Navbar>
         <main className={styles.pageContent}>{children}</main>

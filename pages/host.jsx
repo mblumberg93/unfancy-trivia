@@ -1,12 +1,12 @@
 import Layout from '../components/layout'
-import { useEffect } from "react"
+import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import firebase from '../services/firebase'
 import { useRouter } from 'next/router'
 import { updateState, addTeam, addAnswer, updateScore, resetAnswers } from '../actions'
 import TeamScore from '../components/teamScore'
 import { Button } from 'shards-react'
-import { updateAnswer, updateCurrentQuestion, getCurrentGameState, cookiesToGameState } from '../services/gameService'
+import { updateAnswer, updateCurrentQuestion, cookiesToGameState } from '../services/gameService'
 import { parseCookies } from 'nookies'
 
 export default function Host({ cookies }) {
@@ -79,7 +79,7 @@ export default function Host({ cookies }) {
     }
 
     return (
-        <Layout>
+        <Layout inGame={true}>
             <div className="game-info">
                 <h5>You are hosting {appState.gameName}</h5>
                 <h5>The Game ID is {appState.gameId}</h5>

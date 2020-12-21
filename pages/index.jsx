@@ -6,7 +6,7 @@ import styles from '../styles/Home.module.scss'
 import Layout from '../components/layout'
 import { createGame, joinGame } from '../services/gameService'
 import { useRouter } from 'next/router'
-import { setCookie } from 'nookies'
+import { setGameCookies } from '../services/cookiesService'
 
 export default function Home() {
   const [gameId, setGameId] = useState('')
@@ -23,15 +23,8 @@ export default function Home() {
       teamName: teamName
     }
     updateGameState(appState)
-    setCompetitorCookies()
+    setGameCookies([['isHost', false],['gameId', gameId],['teamName', teamName]])
     joinGame(gameId, teamName, navigateToCompetitor)
-  }
-
-  // TODO - move into a service
-  const setCompetitorCookies = () => {
-    setCookie(null, 'isHost', false)
-    setCookie(null, 'gameId', gameId)
-    setCookie(null, 'teamName', teamName)
   }
 
   const navigateToCompetitor = (gameState) => {
@@ -52,14 +45,8 @@ export default function Home() {
       currentQuestion: 1
     }
     updateGameState(appState)
-    setHostCookies(gameCode)
+    setGameCookies([['isHost', true],['gameId', gameCode]])
     createGame(gameCode, gameName, navigateToHost)
-  }
-
-  // TODO - move into a service
-  const setHostCookies = (gameCode) => {
-    setCookie(null, 'isHost', true)
-    setCookie(null, 'gameId', gameCode)
   }
 
   const navigateToHost = () => {
@@ -71,7 +58,7 @@ export default function Home() {
   }
 
   return (
-    <Layout>
+    <Layout inGame={false}>
       <div className={styles.welcomeHeader}>
         <h4>Welcome to the simple, no frills, no BS trivia game!</h4>
         <h5>To get started either join an existing game as a competitor or create an existing game as a host.</h5>

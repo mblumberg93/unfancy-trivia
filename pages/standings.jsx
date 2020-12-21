@@ -8,7 +8,7 @@ export default function Standings({ cookies, standings }) {
     const router = useRouter()
 
     const goBack = () => {
-        if (cookies.isHost == true || cookies.isHost == 'true') {
+        if (cookies.isHost === true || cookies.isHost === 'true') {
             router.push('/host')
         } else {
             router.push('/competitor')
