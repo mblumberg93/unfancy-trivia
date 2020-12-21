@@ -5,7 +5,7 @@ import firebase from '../services/firebase'
 import { useRouter } from 'next/router'
 import { updateState } from '../actions'
 import { Button, Container, FormInput, Form, FormGroup } from 'shards-react'
-import { addAnswer, getCurrentGameState } from '../services/gameService'
+import { addAnswer, cookiesToGameState } from '../services/gameService'
 import { parseCookies } from 'nookies'
 
 export default function Competitor({ cookies }) {
@@ -35,27 +35,12 @@ export default function Competitor({ cookies }) {
             setAnswer('')
         })
         if (!appState.gameId) {
-            refreshCurrentGameState(cookies.gameId, cookies.teamName)
+            cookiesToGameState(cookies, updateGameState)
         }
         return () => {
             gameRef.off('value', gameListener)
         }
     })
-
-    // TODO - move into a service
-    const refreshCurrentGameState = (gameCode, teamName) => {
-        getCurrentGameState(gameCode, (gameState) => {
-            let newState = {
-                isHost: false,
-                gameName: gameState.gameName,
-                gameId: gameCode,
-                teamName: teamName,
-                currentQuestion: gameState.currentQuestion,
-                teams: gameState.teams
-            }
-            updateGameState(newState)
-        })
-    }
 
     const handleSubmit = () => {
         let newAnswer = {

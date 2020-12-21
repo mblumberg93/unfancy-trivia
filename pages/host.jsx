@@ -6,7 +6,7 @@ import { useRouter } from 'next/router'
 import { updateState, addTeam, addAnswer, updateScore, resetAnswers } from '../actions'
 import TeamScore from '../components/teamScore'
 import { Button } from 'shards-react'
-import { updateAnswer, updateCurrentQuestion, getCurrentGameState } from '../services/gameService'
+import { updateAnswer, updateCurrentQuestion, getCurrentGameState, cookiesToGameState } from '../services/gameService'
 import { parseCookies } from 'nookies'
 
 export default function Host({ cookies }) {
@@ -37,33 +37,13 @@ export default function Host({ cookies }) {
             addGameAnswer(answer)
         })
         if (!appState.gameId) {
-            refreshCurrentGameState(cookies.gameId)
+            cookiesToGameState(cookies, updateGameState)
         }
         return () => {
             teamsRef.off('child_added', teamsListener)
             answersRef.off('child_added', answersListener)
         }
     })
-
-    // TODO - move into a service
-    const refreshCurrentGameState = (gameCode) => {
-        let newTeams = []
-        if (gameState.teams) {
-            newTeams = Object.entries(gameState.teams).map((_, team) => {
-                return team
-            })
-        }
-        getCurrentGameState(gameCode, (gameState) => {
-            let newState = {
-                isHost: true,
-                gameName: gameState.gameName,
-                gameId: gameCode,
-                currentQuestion: gameState.currentQuestion,
-                teams: newTeams
-            }
-            updateGameState(newState)
-        })
-    }
 
     const handleScoreUpdate = (team, score) => {
         if (!isNumeric(score)) {

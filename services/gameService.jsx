@@ -35,16 +35,22 @@ export const getCurrentGameState = (gameCode, callback) => {
     })
 }
 
-//potentially use after refactoring
-export const currentGameStateToRedux = (gameCode, cookies, callback) => {
-    getCurrentGameState(gameCode, (gameState) => {
+export const cookiesToGameState = (cookies, callback) => {
+    getCurrentGameState(cookies.gameId, (gameState) => {
+        let isHost = cookies.isHost === true || cookies.isHost === 'true'
+        let newTeams = []
+        if (gameState.teams && isHost) {
+            newTeams = Object.keys(gameState.teams).map((key) => {
+                return gameState.teams[key]
+            })
+        }
         let reduxState = {
-            isHost: cookies.isHost === true || cookies.isHost === 'true',
+            isHost: isHost,
             gameName: gameState.gameName,
-            gameId: gameCode,
+            gameId: cookies.gameId,
             teamName: cookies.teamName,
             currentQuestion: gameState.currentQuestion,
-            teams: gameState.teams
+            teams: newTeams
         }
         callback(reduxState)
     })
