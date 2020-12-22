@@ -97,4 +97,4 @@ export default function Host({ cookies }) {
 export async function getServerSideProps(context) {
     const cookies = parseCookies(context)
     return { props: { cookies } }
-  }
+}

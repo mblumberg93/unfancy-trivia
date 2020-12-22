@@ -10,6 +10,6 @@ export const setGameCookies = (gameCookies) => {
 
 export const destroyGameCookies = () => {
     gameKeys.forEach((key) => {
-        destroyCookie(key)
+        destroyCookie(null, key)
     })
 }

@@ -74,4 +74,4 @@ export default function Competitor({ cookies }) {
 export async function getServerSideProps(context) {
     const cookies = parseCookies(context)
     return { props: { cookies } }
-  }
+}

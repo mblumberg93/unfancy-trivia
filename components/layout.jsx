@@ -23,20 +23,27 @@ export default function Layout({ children, inGame }) {
           <NavbarBrand className={styles.navBrand}>
             Unfancy Trivia
           </NavbarBrand>
-          { inGame &&
-            <Nav>
-              <NavItem>
-                <Link href="/standings">
-                  <a className="nav-link">Standings</a>
-                </Link>
-              </NavItem>
-              <NavItem>
-                <Link href="/">
-                  <a className="nav-link" onClick={quit}>Quit Game</a>
-                </Link>
-              </NavItem>
-            </Nav>
-          }
+          <Nav>
+            <NavItem>
+              <Link href="/gameplay">
+                <a className="nav-link">How To Play</a>
+              </Link>
+            </NavItem>
+            { inGame &&
+              <>
+                <NavItem>
+                  <Link href="/standings">
+                    <a className="nav-link">Standings</a>
+                  </Link>
+                </NavItem>
+                <NavItem>
+                  <Link href="/">
+                    <a className="nav-link" onClick={quit}>Quit Game</a>
+                  </Link>
+                </NavItem>
+              </>
+            }
+          </Nav>
         </Navbar>
         <main className={styles.pageContent}>{children}</main>
       </Container>
